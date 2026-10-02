@@ -146,7 +146,7 @@ function tip(){
   document.getElementById("tR").textContent = H;
   const v = document.getElementById("verdict");
   const margin = Math.abs(diff) / total;
-  if (diff === 0) { v.textContent = "Dead even. Flip a coin, or pick your druid's race"; v.style.color = "var(--gold)"; }
+  if (diff === 0) { v.textContent = "Dead even. Flip a coin"; v.style.color = "var(--gold)"; }
   else {
     const who = diff > 0 ? "Horde" : "Alliance";
     const how = margin > .35 ? "Clear winner:" : margin > .12 ? "Leaning" : "Barely";
