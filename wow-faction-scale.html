@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horde or Alliance</title>
+<style>
+:root{
+  --bg:#14110d; --panel:#1f1a14; --edge:#3a3024; --text:#efe6d6; --muted:#a89a84;
+  --gold:#d9b45a; --ally:#4a7fd6; --ally-soft:#4a7fd622; --horde:#c8402f; --horde-soft:#c8402f22;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f4eee2; --panel:#fffaf0; --edge:#d8cbb2; --text:#2a2218; --muted:#6e604b;
+    --gold:#9a7420; --ally:#2f62b8; --ally-soft:#2f62b818; --horde:#a8321f; --horde-soft:#a8321f18;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 Lato,"Ubuntu Sans","Noto Sans",sans-serif}
+h1,h2,h3,.verdict,svg text{font-family:"URW Bookman","Bookman Old Style",Georgia,serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:clamp(26px,5vw,40px);margin:0;text-align:center;color:var(--gold);letter-spacing:.02em}
+.sub{text-align:center;color:var(--muted);margin:4px 0 20px}
+.scale{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:12px}
+svg{width:100%;height:auto;display:block}
+.verdict{text-align:center;font-size:clamp(18px,3.5vw,24px);margin:6px 0 2px;font-weight:bold}
+.totals{text-align:center;color:var(--muted);margin-bottom:6px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+@media (max-width:680px){.cols{grid-template-columns:1fr}}
+.col{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:14px}
+.col h2{margin:0 0 10px;font-size:22px;display:flex;justify-content:space-between;align-items:baseline}
+.ally h2{color:var(--ally)} .horde h2{color:var(--horde)}
+.col h2 small{font-size:14px;color:var(--muted);font-weight:normal}
+.factor{padding:10px;border-radius:10px;margin-bottom:10px}
+.ally .factor{background:var(--ally-soft)} .horde .factor{background:var(--horde-soft)}
+.factor .top{display:flex;justify-content:space-between;gap:8px;align-items:start}
+.factor .name{font-weight:bold}
+.factor .note{color:var(--muted);font-size:14px;margin:2px 0 6px}
+.factor .row{display:flex;align-items:center;gap:10px}
+.factor input[type=range]{flex:1;accent-color:var(--gold)}
+.factor .w{min-width:2ch;text-align:right;font-variant-numeric:tabular-nums;font-weight:bold}
+.x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:0 4px}
+.x:hover{color:var(--text)}
+form{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+form input[type=text]{flex:1 1 160px;min-width:0;padding:8px;border-radius:8px;border:1px solid var(--edge);background:var(--bg);color:var(--text);font:inherit}
+button.add{padding:8px 12px;border-radius:8px;border:1px solid var(--edge);background:var(--bg);color:var(--text);cursor:pointer;font:inherit}
+button.add:hover{border-color:var(--gold)}
+.foot{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
+.foot button{background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit}
+</style>
+</head>
+<body>
+<main>
+  <h1>For the Horde… or the Alliance?</h1>
+  <p class="sub">WoW Forever faction decision · drag the weights, watch the scale tip</p>
+
+  <div class="scale">
+    <svg viewBox="0 0 600 300" aria-label="Balance scale">
+      <!-- stand -->
+      <path d="M270 285 h60 l-12 -14 h-36 z" fill="var(--edge)"/>
+      <rect x="296" y="70" width="8" height="203" fill="var(--edge)"/>
+      <g id="beam" style="transition:transform .6s cubic-bezier(.3,1.4,.5,1);transform-origin:300px 70px">
+        <rect x="90" y="65" width="420" height="10" rx="5" fill="var(--gold)"/>
+      </g>
+      <circle cx="300" cy="70" r="11" fill="var(--gold)" stroke="var(--bg)" stroke-width="3"/>
+      <g id="panL" style="transition:transform .6s cubic-bezier(.3,1.4,.5,1)">
+        <line x1="95" y1="70" x2="45" y2="170" stroke="var(--muted)" stroke-width="1.5"/>
+        <line x1="95" y1="70" x2="145" y2="170" stroke="var(--muted)" stroke-width="1.5"/>
+        <path d="M35 170 h120 a60 26 0 0 1 -120 0z" fill="var(--ally)"/>
+        <text x="95" y="215" text-anchor="middle" fill="var(--text)" font-size="20" font-weight="bold">Alliance</text>
+        <text id="tL" x="95" y="188" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">0</text>
+      </g>
+      <g id="panR" style="transition:transform .6s cubic-bezier(.3,1.4,.5,1)">
+        <line x1="505" y1="70" x2="455" y2="170" stroke="var(--muted)" stroke-width="1.5"/>
+        <line x1="505" y1="70" x2="555" y2="170" stroke="var(--muted)" stroke-width="1.5"/>
+        <path d="M445 170 h120 a60 26 0 0 1 -120 0z" fill="var(--horde)"/>
+        <text x="505" y="215" text-anchor="middle" fill="var(--text)" font-size="20" font-weight="bold">Horde</text>
+        <text id="tR" x="505" y="188" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">0</text>
+      </g>
+    </svg>
+    <div class="verdict" id="verdict"></div>
+    <div class="totals" id="totals"></div>
+  </div>
+
+  <div class="cols">
+    <section class="col ally" data-side="ally">
+      <h2>Alliance <small>reasons to go blue</small></h2>
+      <div class="list"></div>
+      <form><input type="text" placeholder="Add an Alliance reason…" maxlength="80"><button class="add">Add</button></form>
+    </section>
+    <section class="col horde" data-side="horde">
+      <h2>Horde <small>reasons to go red</small></h2>
+      <div class="list"></div>
+      <form><input type="text" placeholder="Add a Horde reason…" maxlength="80"><button class="add">Add</button></form>
+    </section>
+  </div>
+
+
+  <p class="foot">Saved in this browser only. <button id="reset">Clear all</button></p>
+</main>
+
+<script>
+const KEY = "wow-forever-faction-v2";
+const DEFAULTS = [];
+
+let factors;
+try { factors = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
+if (!Array.isArray(factors)) factors = structuredClone(DEFAULTS);
+
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(factors)); } catch(e) {} }
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function render(){
+  for (const side of ["ally","horde"]) {
+    const list = document.querySelector(`[data-side=${side}] .list`);
+    list.innerHTML = "";
+    factors.forEach((f,i) => {
+      if (f.side !== side) return;
+      const d = document.createElement("div");
+      d.className = "factor";
+      d.innerHTML = `<div class="top"><span class="name">${esc(f.name)}</span><button class="x" title="Remove">×</button></div>
+        ${f.note ? `<div class="note">${esc(f.note)}</div>` : ""}
+        <div class="row"><input type="range" min="0" max="10" value="${f.w}" aria-label="Weight"><span class="w">${f.w}</span></div>`;
+      d.querySelector("input").oninput = e => { f.w = +e.target.value; d.querySelector(".w").textContent = f.w; save(); tip(); };
+      d.querySelector(".x").onclick = () => { factors.splice(i,1); save(); render(); };
+      list.appendChild(d);
+    });
+    if (!list.children.length) list.innerHTML = `<div class="note" style="color:var(--muted)">Nothing here yet.</div>`;
+  }
+  tip();
+}
+
+function tip(){
+  const A = factors.filter(f=>f.side==="ally").reduce((s,f)=>s+f.w,0);
+  const H = factors.filter(f=>f.side==="horde").reduce((s,f)=>s+f.w,0);
+  const diff = H - A, total = A + H || 1;
+  const deg = Math.max(-16, Math.min(16, diff / total * 40));
+  document.getElementById("beam").style.transform = `rotate(${deg}deg)`;
+  const r = deg * Math.PI / 180, arm = 205;
+  // pan hangs from beam end; move it with the end, don't rotate it
+  const dxL = 300 - arm*Math.cos(r) - 95, dyL = 70 - arm*Math.sin(r) - 70;
+  const dxR = 300 + arm*Math.cos(r) - 505, dyR = 70 + arm*Math.sin(r) - 70;
+  document.getElementById("panL").style.transform = `translate(${dxL}px,${dyL}px)`;
+  document.getElementById("panR").style.transform = `translate(${dxR}px,${dyR}px)`;
+  document.getElementById("tL").textContent = A;
+  document.getElementById("tR").textContent = H;
+  const v = document.getElementById("verdict");
+  const margin = Math.abs(diff) / total;
+  if (diff === 0) { v.textContent = "Dead even. Flip a coin, or pick your druid's race"; v.style.color = "var(--gold)"; }
+  else {
+    const who = diff > 0 ? "Horde" : "Alliance";
+    const how = margin > .35 ? "Clear winner:" : margin > .12 ? "Leaning" : "Barely";
+    v.textContent = `${how} ${who}`;
+    v.style.color = diff > 0 ? "var(--horde)" : "var(--ally)";
+  }
+  document.getElementById("totals").textContent = `Alliance ${A} · Horde ${H}`;
+}
+
+document.querySelectorAll(".col form").forEach(form => {
+  form.onsubmit = e => {
+    e.preventDefault();
+    const inp = form.querySelector("input"), name = inp.value.trim();
+    if (!name) return;
+    factors.push({side: form.closest(".col").dataset.side, name, note:"", w:0});
+    inp.value = ""; save(); render();
+  };
+});
+document.getElementById("reset").onclick = () => { factors = structuredClone(DEFAULTS); save(); render(); };
+render();
+</script>
+</body>
+</html>
